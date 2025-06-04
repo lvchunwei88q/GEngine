@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GEngine</title>
+</head>
+<!--Log-->
+<link rel="stylesheet" href="../Log/ShowToast.css"/>
+<script src = "../Log/Log.js"></script>
+<script src = "../Log/FrameRate.js"></script>
+<!--Launch-->
+<script src = "Basiconfiguration.js"></script>
+<script src = "Launch.js"></script>
+<!--Initialize-->
+<script src = "../Initialize/InitializeMain.js"></script>
+<script src="../Initialize/ParametersLeft.js"></script>
+<script src="../Initialize/ObjectInstanceInterface.js"></script>
+<link rel="stylesheet" href="../Initialize/ParametersLeft.css"/>
+<link rel="stylesheet" href="../Initialize/ObjectInstanceInterface.css"/>
+<!--Effect-->
+<script src="../Effect/AddObjects.js"></script>
+<script src="../Effect/InitializeEngine.js"></script>
+<script src="../Effect/ColorConversion.js"></script>
+<script src = "../Effect/Physics/Physics.js"></script><!--AddPhysics-->
+<script src = "../Effect/Physics/PhysicalAlgorithms.js"></script>
+<!--End！-->
+<style>
+    body {
+        margin: 0;padding: 0;
+    }
+</style>
+<body id="Main">
+   <!--Log-->
+   <div class="toast-container" id="toastContainer"></div>
+</body>
+<script>
+    Launch(document.getElementById("Main"));//Launch——GEngine的启动函数
+</script>
+</html>
