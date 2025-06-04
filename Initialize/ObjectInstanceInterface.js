@@ -289,6 +289,15 @@ function ObjectInstanceInterfaceaddEventListener(Parameter,Type){
     
     GetObjectInstance.forEach((obj) => {
         if (obj.Object_ID === JSON.parse(localStorage.getItem("ObjectInstanceID"))) {//判断ObjectInstance
+            const ObjectPhysicsID = JSON.parse(localStorage.getItem("ObjectPhysicsID"));
+            if(ObjectPhysicsID)//ObjectPhysicsID
+            for (let i=0; i < ObjectPhysicsID.length; i++){
+                let item = ObjectPhysicsID[i];
+                if(obj.Object_ID === item.ObjectID && item.PhysicsBool === false){//这里判断Object是否正在进行物理模拟
+                    ShowToast("这个Object正在进行物理模拟!","warning");
+                    return;//阻断
+                }
+            }
             let dataType = obj.data_type;//GetObjectType
             switch (dataType){
                 case "Diamonds":addEventListenerDiamonds(obj,Parameter,Type);
