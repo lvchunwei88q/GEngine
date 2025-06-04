@@ -1,7 +1,7 @@
 function Initialize(){
     let Initializeinterface = false,
         Framerate = false,
-        Physicsframe = false;
+        Physicsframe = false,
         Interfaceparameters = false;
     // Let
 
@@ -12,7 +12,7 @@ function Initialize(){
     
     InitialLoading();//初次加载的函数
     
-    if(Initializeinterface && Interfaceparameters && Framerate) {
+    if(Initializeinterface && Interfaceparameters && Framerate && Physicsframe) {
         localStorage.setItem("Initialize",JSON.stringify(false));
         //这表明界面已经设置完成
         ShowToast("界面已经设置完成!","success");
