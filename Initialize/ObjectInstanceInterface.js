@@ -248,7 +248,7 @@ function SetObjectInstanceInterface(DataType){
         case "Rotundity":
             document.getElementById("Rotundity_Size").addEventListener("input", (e) => {
                 SizeRotundity = document.getElementById("Rotundity_Size").value;
-                ObjectInstanceInterfaceaddEventListener(Size,"Size");
+                ObjectInstanceInterfaceaddEventListener(SizeRotundity,"Size");
             });
             document.getElementById("Rotundity_Color").addEventListener("input", (e) => {
                 Color = document.getElementById("Rotundity_Color").value;
@@ -284,7 +284,7 @@ function SetObjectInstanceInterface(DataType){
     }
 }
 
-function ObjectInstanceInterfaceaddEventListener(Parameter,Type){
+function ObjectInstanceInterfaceaddEventListener(Parameter,Type,bHighPhysics){
     let GetObjectInstance = document.querySelectorAll(".ObjectInstance");//Class
     
     GetObjectInstance.forEach((obj) => {
@@ -300,9 +300,9 @@ function ObjectInstanceInterfaceaddEventListener(Parameter,Type){
             }
             let dataType = obj.data_type;//GetObjectType
             switch (dataType){
-                case "Diamonds":addEventListenerDiamonds(obj,Parameter,Type);
+                case "Diamonds":addEventListenerDiamonds(obj,Parameter,Type,bHighPhysics);
                     break;
-                case "Rotundity":addEventListenerRotundity(obj,Parameter,Type);
+                case "Rotundity":addEventListenerRotundity(obj,Parameter,Type,bHighPhysics);
                     break;
             }
         }

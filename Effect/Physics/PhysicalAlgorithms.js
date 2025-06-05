@@ -46,7 +46,8 @@ function PhysicalAlgorithms(Object,className,GetObjectHeight){//GetObject
     PhysicalIndex++;
 }
 
-function MainPhysicsSimulation(Object,PhysicalSimulationOfStateOfObject,DistanceToViewportBottom,className){
+function MainPhysicsSimulation(Object,PhysicalSimulationOfStateOfObject,DistanceToViewportBottom,className
+                               ,Hide_SDF){
     let NewPhysicalSimulationOfStateOfObject = [];
     for (let i = 0; i < PhysicalSimulationOfStateOfObject.length; i++) {
         let item = PhysicalSimulationOfStateOfObject[i];
@@ -57,7 +58,11 @@ function MainPhysicsSimulation(Object,PhysicalSimulationOfStateOfObject,Distance
             });
             if(JSON.parse(localStorage.getItem("Debug")))
                 console.log(`Object：${item.ObjectID}已进入物理模拟!`);//打印Object物理模拟情况
-            SDF(DistanceToViewportBottom,className,Object.Object_ID);
+            if(!JSON.parse(localStorage.getItem("bHighPhysics"))){
+                SDF_Common(DistanceToViewportBottom,className,Object.Object_ID);//基础
+            }else{
+                SDFAA(DistanceToViewportBottom,className,Object.Object_ID);//高品质
+            }
         }else{
             NewPhysicalSimulationOfStateOfObject.push({
                 "ObjectID":item.ObjectID,
@@ -68,7 +73,8 @@ function MainPhysicsSimulation(Object,PhysicalSimulationOfStateOfObject,Distance
     localStorage.setItem("PhysicalSimulationOfStateOfObject",JSON.stringify(NewPhysicalSimulationOfStateOfObject));//更新
 
     // ----------------------- 物理算法 ------------------------ //
-    function SDF(Position,className,ObjectID) {
+    function SDF_Common(Position,className,ObjectID) {
+        const GRAVITY = 1.0055;
         let Object = GettargetElement(className).style;
         let G = 0.1; //初始下落速度
         let Index = 0,
@@ -97,7 +103,7 @@ function MainPhysicsSimulation(Object,PhysicalSimulationOfStateOfObject,Distance
                 bLoop = false;
                 Index = 0;
                 const LoopE = setInterval(function() {
-                    G *= 1.0055; //重力加速度
+                    G *= GRAVITY; //重力加速度
                     Position -= G;
                     Index++;
                     //console.log("G:"+Position);
@@ -123,5 +129,88 @@ function MainPhysicsSimulation(Object,PhysicalSimulationOfStateOfObject,Distance
                 });
             }
         });
+    }
+
+    function SDFAA(Position, className, ObjectID) {
+        const element = GettargetElement(className);
+        if (!element) return;
+
+        // 物理常量
+        const GRAVITY = 0.002;        // 重力加速度 (px/ms²)
+        const RESTITUTION = 20000.7;      // 弹性系数 (反弹能量保留比例)
+        const DAMPING = 0.08;         // 能量衰减系数
+        const MIN_VELOCITY = 0.05;    // 最小速度阈值
+        const MIN_BOUNCE_HEIGHT = 1;  // 最小弹跳高度
+
+        // 物理状态
+        let position = Position;
+        let velocity = 0;
+        let lastTime = null;
+        let isFalling = true;
+
+        // 更新物体位置
+        const updatePosition = () => {
+            element.style.bottom = `${position}px`;
+        };
+
+        // 物理模拟循环
+        const simulatePhysics = (timestamp) => {
+            if (!lastTime) lastTime = timestamp;
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+
+            // 应用重力
+            if (isFalling) {
+                velocity += GRAVITY * deltaTime;
+                position -= velocity * deltaTime;
+
+                // 检测碰撞
+                if (position <= 0) {
+                    position = 0; // 防止穿透
+                    velocity = -velocity * RESTITUTION; // 反弹
+                    isFalling = false;
+
+                    // 检查是否停止
+                    if (Math.abs(velocity) < MIN_VELOCITY ||
+                        Math.abs(position) < MIN_BOUNCE_HEIGHT) {
+                        finishSimulation();
+                        return;
+                    }
+                }
+            }
+            // 反弹上升阶段
+            else {
+                velocity += GRAVITY * deltaTime; // 重力仍然作用
+                position += velocity * deltaTime;
+
+                // 到达最高点转为下落
+                if (velocity >= 0) {
+                    isFalling = true;
+                    velocity *= DAMPING; // 能量衰减
+                }
+            }
+
+            updatePosition();
+            requestAnimationFrame(simulatePhysics);
+        };
+
+        // 完成模拟后的清理工作
+        const finishSimulation = () => {
+            position = 0;
+            updatePosition();
+
+            // 更新物理状态存储
+            const objectData = JSON.parse(localStorage.getItem("PhysicalSimulationOfStateOfObject") || "[]");
+            const newData = objectData.map(item => ({
+                ...item,
+                PhysicsBool: item.ObjectID === ObjectID ? false : item.PhysicsBool
+            }));
+
+            localStorage.setItem("PhysicalSimulationOfStateOfObject", JSON.stringify(newData));
+        };
+
+        // 开始模拟
+        updatePosition();
+        requestAnimationFrame(simulatePhysics);
     }
 }

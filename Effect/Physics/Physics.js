@@ -61,6 +61,7 @@ function PhysicsSimulation(Object_ID,Bool){
     if (JSON.parse(localStorage.getItem("ObjectPhysicsID")).length) {
         localStorage.setItem("Physics",JSON.stringify(true));
     }else{
+        if(JSON.parse(localStorage.getItem("Debug")))
         ShowToast(`检测到所有物体已关闭物理模拟!`,"success",3000);
         localStorage.setItem("Physics",JSON.stringify(false));
     }

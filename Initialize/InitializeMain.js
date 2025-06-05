@@ -1,4 +1,4 @@
-function Initialize(){
+function Initialize(){//这个函数只会加载一次
     let Initializeinterface = false,
         Framerate = false,
         Physicsframe = false,
@@ -23,7 +23,7 @@ function InitializeInterface(){
     let MainIdFace = JSON.parse(localStorage.getItem("MainID"));
     console.log("InitializeInterface", MainIdFace);
     //初始化参数界面
-    ParametersLeft();//ParametersLeft.js
+    ParametersLeft(0);//ParametersLeft.js->这里先初始化基础面版
     //开始不会显示只有到了用户点击ObjectInstance才会显示
     
     //ObjectInstanceInterface()//ObjectInstanceInterface.js
@@ -39,6 +39,7 @@ function InterfaceParameters(){
 function InitialLoading(){
     //Initialize the engine
     InitializeEngine();//包含Map....(首先这里设置了GEngine的Back)
+    ParametersLeft(1);//这里加载物理列表
     //Bind a click event
     //Enum——枚举
     //Object
@@ -46,6 +47,10 @@ function InitialLoading(){
     const Rotundity = document.getElementById("Rotundity");
     //Bool
     const DebugBool = document.getElementById("DebugBool");
+    //物理
+    const bHighPhysics = document.getElementById("bHighPhysics");
+    const GravitationalAcceleration = document.getElementById("GravitationalAcceleration");
+    AddPhysicalSettings(bHighPhysics,GravitationalAcceleration);//AddPhysicalSettings
     //这里表示了GEngine的所有的模型枚举
     BindClickEvent(Diamonds,Rotundity);
     DebugValueAndObject(DebugBool);

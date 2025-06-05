@@ -24,3 +24,18 @@
     width: 45%;
     margin-top: max(5px);
 }
+
+.LeftDiv_Physics{
+    float: left;
+    margin: 0;
+    padding-top: 10px;
+    background: #423d3d;
+    width: 120px;
+}
+
+.Main_LeftDiv{   /* 主要的基础界面 */
+    float: left;
+    margin: 0;
+    background: #423d3d;
+    width: 120px;
+}
