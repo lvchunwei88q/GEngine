@@ -12,17 +12,27 @@ function PhysicsSimulation(Object_ID,Bool){
             if (obj.Object_ID === Object_ID){
                 let ClassName = `${obj.data_type}_${obj.Object_ID}`;
                 //GettargetElement(className) -> ObjectInstanceInterface.js
+
+                // 获取元素底部到视口顶部的距离
+                const ObjectBottomToViewportTop = obj.getBoundingClientRect().bottom;
+                // 获取视口高度
+                const viewportHeight = window.innerHeight;
+                // 计算元素底部到视口底部的高度
+                const DistanceToViewportBottom = viewportHeight - ObjectBottomToViewportTop - parseFloat(GettargetElement(ClassName).style.top) / 2;//这里也要减去GetObjectHeight
                 
                 ObjectPhysicsID.push({
                     "ObjectID":Object_ID,
                     "top":GettargetElement(ClassName).style.top//Get->top
                 });
+
+                GettargetElement(ClassName).style.top = "";//清除top
+                GettargetElement(ClassName).style.bottom = `${DistanceToViewportBottom}px`;
             }
         });
         console.log(JSON.stringify(ObjectPhysicsID));
         localStorage.setItem("ObjectPhysicsID",JSON.stringify(ObjectPhysicsID));//这里记录了所有的ObjectPhysicsID
         
-        TickPhysicalSimulationOfStateOfObject()//每次点击时判断
+        //TickPhysicalSimulationOfStateOfObject()//每次点击时判断
     }else{
         ShowToast(`Object:${Object_ID}关闭物理模拟!`,"success",2000);
         let ObjectPhysicsIDArray = [];
@@ -56,7 +66,7 @@ function PhysicsSimulation(Object_ID,Bool){
         console.log(JSON.stringify(ObjectPhysicsIDArray));
         localStorage.setItem("ObjectPhysicsID",JSON.stringify(ObjectPhysicsIDArray));
         
-        TickPhysicalSimulationOfStateOfObject()//每次点击时判断
+        //TickPhysicalSimulationOfStateOfObject()//每次点击时判断
     }
     if (JSON.parse(localStorage.getItem("ObjectPhysicsID")).length) {
         localStorage.setItem("Physics",JSON.stringify(true));
@@ -90,80 +100,13 @@ function Physics(){
                     //console.log(obj.Object_ID);Debug
                     
                     PhysicalAlgorithms(obj,className,GetObjectHeight);//物理模拟函数-传入Obj
-                    bOne = [];PhysicalIndex = 0;//这里需要重置
+                    /* 每一帧都会遍历所有的Object */
                 }
             }
         });
     }
-
     function PhysicalNone(){//关闭物理模拟时调用
         
     }
 }
-
-function TickPhysicalSimulationOfStateOfObject(){//每用户点击时会对Object进行检测
-    //当前物体模拟判断->物理模拟 - 为了动态变化需要每帧获取物体以应对更新的物体
-    if(!JSON.parse(localStorage.getItem("PhysicalSimulationOfStateOfObject"))){
-        //如果PhysicalSimulationOfStateOfObject没有值直接赋值
-        let ObjectPhysicsID = JSON.parse(localStorage.getItem("ObjectPhysicsID")),ObjectPhysics = [];
-        for (let i=0; i < ObjectPhysicsID.length; i++){
-            ObjectPhysics.push({
-                "ObjectID":ObjectPhysicsID[i].ObjectID,
-                "PhysicsBool":true//因为是初始赋值所以直接都要模拟
-            });
-        }
-        localStorage.setItem("PhysicalSimulationOfStateOfObject",JSON.stringify(ObjectPhysics));//保存
-        if(JSON.parse(localStorage.getItem("Debug"))){
-            console.log("初始赋值已完成！");//这里只是初始赋值接下来需要每帧判断是否有新加入的Object
-        }
-    }
-    
-    let ObjectPhysicsID = JSON.parse(localStorage.getItem("ObjectPhysicsID")),ObjectPhysics = [];//GetObjectPhysicsID
-    ObjectPhysics = JSON.parse(localStorage.getItem("PhysicalSimulationOfStateOfObject"));//GetPhysicalSimulationOfStateOfObject
-    for (let i=0; i < ObjectPhysicsID.length; i++){
-        let item = ObjectPhysicsID[i],Index = 0;
-        for (let j=0; j<ObjectPhysics.length; j++){//两次循环判断是否有值更新
-            if(item.ObjectID === ObjectPhysics[j].ObjectID){
-                Index = 1;//如果相符就设置为1否则为0
-            }
-        }
-        if(Index === 1)continue;//如果符合则跳过
-        if(ObjectPhysics.length < ObjectPhysicsID.length){//这里是每帧判断所以这种方法完全可行
-            if(Index !== 1){//说明没有对应的Object-add
-                ObjectPhysics.push({
-                    "ObjectID":ObjectPhysicsID[i].ObjectID,
-                    "PhysicsBool":true//新加的Object需要进行模拟
-                });
-                localStorage.setItem("PhysicalSimulationOfStateOfObject",JSON.stringify(ObjectPhysics));
-                //console.log(localStorage.getItem("PhysicalSimulationOfStateOfObject"));
-                if(JSON.parse(localStorage.getItem("Debug"))){
-                    console.log("ObjectPhysics:"+ObjectPhysics.length);
-                }
-            }
-        }else{//因为每帧只可能去掉一个所以不用递归-这里只可能是减去->ObjectPhysics.length < ObjectPhysicsID.length
-            let NewObjectPhysics = [];
-            if(ObjectPhysicsID === []){//这里判断ObjectPhysics的数量是否为0
-                localStorage.setItem("PhysicalSimulationOfStateOfObject",JSON.stringify(NewObjectPhysics));
-            }else{
-                for (let x=0; x < ObjectPhysicsID.length; x++){//ObjectPhysicsID是已经被更新过的
-                    let Bool,items = ObjectPhysicsID[x];
-                    for(let j=0; j<ObjectPhysics.length; j++){
-                        if (items.ObjectID === ObjectPhysics[j].ObjectID){
-                            Bool = ObjectPhysics[j].PhysicsBool;
-                            NewObjectPhysics.push({
-                                "ObjectID":items.ObjectID,
-                                "PhysicsBool":Bool//模拟
-                            });
-                        }
-                    }
-                }
-                localStorage.setItem("PhysicalSimulationOfStateOfObject",JSON.stringify(NewObjectPhysics));
-            }
-            if(JSON.parse(localStorage.getItem("Debug"))){
-                console.log("ObjectPhysics:"+ObjectPhysics.length);
-            }
-        }
-    }
-}
-
 // ----- End!

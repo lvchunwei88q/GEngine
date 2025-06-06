@@ -9,5 +9,5 @@ function  Basiconfiguration(Id){
     localStorage.setItem("ObjectInstanceID",JSON.stringify(null));//当用户点击Object的Instance时Get的ID
     localStorage.setItem("Physics",JSON.stringify(false));//控制物理模拟
     localStorage.setItem("ObjectPhysicsID",JSON.stringify(null));//存储那些是需要进行物理模拟的Object
-    localStorage.setItem("PhysicalSimulationOfStateOfObject",JSON.stringify(null));//这里记录了每一个object的物理模拟状态
+    //localStorage.setItem("PhysicalSimulationOfStateOfObject",JSON.stringify(null));//这里记录了每一个object的物理模拟状态
 }
